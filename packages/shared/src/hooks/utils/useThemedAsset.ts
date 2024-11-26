@@ -14,6 +14,8 @@ import {
   cloudinaryIntegrationsSlackHeaderDark,
   cloudinaryGenericErrorLight,
   cloudinaryGenericErrorDark,
+  cloudinaryPlusBackgroundLight,
+  cloudinaryPlusBackgroundDark,
 } from '../../lib/image';
 
 interface UseAsset {
@@ -24,6 +26,7 @@ interface UseAsset {
   githubShortcut: string;
   slackIntegrationHeader: string;
   gardrError: string;
+  plusBackground: string;
 }
 
 export const useIsLightTheme = (): boolean => {
@@ -62,5 +65,8 @@ export const useThemedAsset = (): UseAsset => {
     gardrError: isLight
       ? cloudinaryGenericErrorLight
       : cloudinaryGenericErrorDark,
+    plusBackground: isLight
+      ? cloudinaryPlusBackgroundLight
+      : cloudinaryPlusBackgroundDark,
   };
 };

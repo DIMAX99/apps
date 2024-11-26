@@ -1,11 +1,9 @@
 import React, {
   ReactElement,
   ReactNode,
-  useCallback,
   useContext,
   useEffect,
   useMemo,
-  useRef,
 } from 'react';
 import { useMutation } from '@tanstack/react-query';
 import {
@@ -59,7 +57,6 @@ export interface SettingsContextData extends Omit<RemoteSettings, 'theme'> {
   onToggleHeaderPlacement(): Promise<unknown>;
   setOnboardingChecklistView: (value: ChecklistViewState) => Promise<unknown>;
   setSettings: (newSettings: Partial<RemoteSettings>) => Promise<void>;
-  applyThemeMode: (mode?: ThemeMode) => void;
 }
 
 const SettingsContext = React.createContext<SettingsContextData>(null);
@@ -134,13 +131,12 @@ export const SettingsContextProvider = ({
   updateSettings,
   loadedSettings,
 }: SettingsContextProviderProps): ReactElement => {
-  const setTheme = useRef<ThemeMode>(null);
   const { user } = useContext(AuthContext);
   const userId = user?.id;
   const { unsubscribePersonalizedDigest } = usePersonalizedDigest();
 
   useEffect(() => {
-    if (!loadedSettings || setTheme.current) {
+    if (!loadedSettings) {
       return;
     }
 
@@ -166,19 +162,6 @@ export const SettingsContextProvider = ({
       updateSettings({ ...settings, ...rollback });
     },
   });
-
-  const applyThemeMode = useCallback(
-    (mode?: ThemeMode) => {
-      if (mode) {
-        setTheme.current = mode;
-      } else {
-        setTheme.current = null;
-      }
-
-      applyTheme(setTheme.current || themeModes[settings.theme]);
-    },
-    [settings.theme],
-  );
 
   useEffect(() => {
     const lightMode = storageWrapper.getItem(deprecatedLightModeStorageKey);
@@ -273,11 +256,10 @@ export const SettingsContextProvider = ({
           },
         }),
       setSettings,
-      applyThemeMode,
     }),
     // @NOTE see https://dailydotdev.atlassian.net/l/cp/dK9h1zoM
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [settings, loadedSettings, userId, applyThemeMode],
+    [settings, loadedSettings, userId],
   );
 
   return (
